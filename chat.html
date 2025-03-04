@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>チャット</title>
+  <style>
+    body { font-family: sans-serif; }
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      max-width: 600px;
+      margin: auto;
+      border: 1px solid #ccc;
+    }
+    .message-history {
+      flex: 1;
+      overflow-y: auto;
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+    }
+    .message-input {
+      display: flex;
+    }
+    .message-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .message-input button {
+      padding: 10px;
+    }
+    button.back {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <button class="back" onclick="goBack()">戻る</button>
+  <div class="chat-container">
+    <div class="message-history" id="message-history">
+      <!-- チャット履歴（例として固定メッセージ） -->
+      <div>【相手】こんにちは！</div>
+      <div>【自分】こんにちは、元気ですか？</div>
+    </div>
+    <div class="message-input">
+      <input type="text" id="chat-input" placeholder="メッセージを入力">
+      <button onclick="sendMessage()">送信</button>
+    </div>
+  </div>
+
+  <script>
+    function goBack() {
+      // 前画面（連絡可能ユーザーリスト等）に戻る処理
+      window.history.back();
+    }
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value;
+      if (message.trim() === '') return;
+      // メッセージ送信処理（実際はWebSocketやAPIを利用）
+      const historyDiv = document.getElementById('message-history');
+      const newMsg = document.createElement('div');
+      newMsg.textContent = "【自分】" + message;
+      historyDiv.appendChild(newMsg);
+      input.value = '';
+      // 送信後、最新メッセージが見えるようにスクロール
+      historyDiv.scrollTop = historyDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
