@@ -1,3 +1,5 @@
+console.log('Server.js is being executed');
+
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
