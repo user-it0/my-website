@@ -1,8 +1,13 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // Socket.IO 接続（サーバー側：server.js の socket.io に接続）
+    const socket = io();
+  
     // グローバル変数
     let currentUser = null;
     let approvedFriends = [];
     let incomingRequests = [];
+    let currentRoom = null; // 現在チャット中のルーム
+  
     // ユーザー検索用のダミーデータ（実際はサーバーから取得）
     const dummyUsers = ["Alice", "Bob", "Charlie", "David", "Eve"];
   
@@ -46,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // 本来はサーバーでユーザー登録する処理を実装
       currentUser = { username, password };
       alert("登録完了: " + username);
-      // ダミーの受信リクエスト例（ログイン後、いくつかのリクエストが届いているとする）
+      // ダミーの受信リクエスト例
       incomingRequests = ["Alice", "Bob"];
       showHomePage();
     });
@@ -59,7 +64,6 @@ document.addEventListener("DOMContentLoaded", function() {
       // 本来はサーバー側で認証処理を実施
       currentUser = { username, password };
       alert("ログイン成功: " + username);
-      // ログイン時もダミーリクエストをセット（例）
       incomingRequests = ["Charlie"];
       showHomePage();
     });
@@ -94,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
       incomingRequests.forEach(requestUser => {
         const li = document.createElement("li");
         li.className = "contact-item";
-        // リクエストユーザー名とアクションボタン群
+        // ユーザー名とアクションボタン
         const span = document.createElement("span");
         span.textContent = requestUser;
         li.appendChild(span);
@@ -141,26 +145,30 @@ document.addEventListener("DOMContentLoaded", function() {
         li.textContent = user;
         li.className = "contact-item";
         li.addEventListener("click", function() {
-          // 友達追加リクエスト送信（相手側にリクエストが届く仕組みをシミュレーション）
+          // 友達追加リクエスト送信（実際はサーバー経由の処理に置換）
           if(approvedFriends.includes(user)) {
             alert(user + " は既に連絡可能リストに追加されています。");
           } else {
-            // ここでは送信後、即座に相手側にリクエストが届いたと仮定
             alert(user + " に友達追加リクエストを送信しました。");
-            // ※実際はサーバー経由でリクエストが届く仕組みにする
+            // ※送信後、相手側にリクエストが届く想定
           }
         });
         searchResultUl.appendChild(li);
       });
     });
   
-    // チャット画面を開く
+    // チャット画面を開く（1対1チャットのルームに参加）
     function openChat(friend) {
+      // ルーム名は両ユーザー名を昇順に連結して生成
+      currentRoom = [currentUser.username, friend].sort().join("_");
+      socket.emit("joinRoom", currentRoom);
+  
       pageHome.style.display = "none";
       pageChat.style.display = "block";
       messageHistory.innerHTML = "";
+      // ルーム参加時のウェルカムメッセージ（各自で初回のみ表示）
       const welcome = document.createElement("div");
-      welcome.textContent = "チャット開始: " + friend;
+      welcome.textContent = "チャット開始 (" + friend + ")";
       messageHistory.appendChild(welcome);
     }
   
@@ -174,10 +182,21 @@ document.addEventListener("DOMContentLoaded", function() {
     sendMessageBtn.addEventListener("click", function() {
       const msg = chatInput.value.trim();
       if(msg === "") return;
-      const div = document.createElement("div");
-      div.textContent = "【自分】 " + msg;
-      messageHistory.appendChild(div);
+      // メッセージ送信：サーバーへ送信し、同ルーム内の他クライアントへ配信
+      const data = { room: currentRoom, sender: currentUser.username, message: msg };
+      socket.emit("chatMessage", data);
       chatInput.value = "";
-      messageHistory.scrollTop = messageHistory.scrollHeight;
+    });
+  
+    // サーバーからのチャットメッセージ受信
+    socket.on("chatMessage", data => {
+      // data: {room, sender, message}
+      // ルーム名が一致する場合のみ表示
+      if(data.room === currentRoom) {
+        const div = document.createElement("div");
+        div.textContent = "【" + data.sender + "】 " + data.message;
+        messageHistory.appendChild(div);
+        messageHistory.scrollTop = messageHistory.scrollHeight;
+      }
     });
   });  
