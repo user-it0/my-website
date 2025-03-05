@@ -9,15 +9,34 @@ body {
   header {
     padding: 10px;
     background-color: #f7f7f7;
+    text-align: center;
   }
   input[readonly] {
     border: none;
     background-color: transparent;
     font-size: 1.2em;
+    text-align: center;
   }
   
-  /* 共通：リスト（友達・検索結果） */
-  .contact-list, #search-result {
+  /* 各セクションのスタイル */
+  #page-auth > div, #page-home, #page-chat {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  /* フォーム中央寄せ */
+  #page-auth > div {
+    margin-top: 50px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  /* 検索・友達リクエスト・連絡可能リスト */
+  #search-section, #friend-requests-section, #contacts-section {
+    margin: 20px;
+  }
+  ul, .contact-list {
     list-style: none;
     padding: 0;
   }
@@ -36,10 +55,10 @@ body {
   .chat-container {
     display: flex;
     flex-direction: column;
-    height: 90vh;
-    max-width: 600px;
-    margin: 20px auto;
+    height: 80vh;
     border: 1px solid #ccc;
+    margin: 20px;
+    border-radius: 8px;
   }
   .message-history {
     flex: 1;
@@ -54,16 +73,32 @@ body {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
+    border-radius: 0 0 0 8px;
   }
   .message-input button {
     padding: 10px;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 0 8px 0;
   }
   button {
     cursor: pointer;
   }
   
-  /* フォーム中央寄せ */
-  #page-auth > div {
-    max-width: 400px;
-    margin: 50px auto;
+  /* レスポンシブデザイン */
+  @media (max-width: 600px) {
+    body {
+      font-size: 16px;
+    }
+    #page-auth > div, #page-home, #page-chat {
+      margin: 10px;
+      padding: 10px;
+    }
+    .chat-container {
+      height: 70vh;
+      margin: 10px;
+    }
+    .message-input input, .message-input button {
+      padding: 8px;
+    }
   }  
