@@ -3,9 +3,10 @@ body {
     font-family: sans-serif;
     margin: 0;
     padding: 0;
+    background: #f5f5f5;
   }
   
-  /* ヘッダー */
+  /* スマートフォンでも見やすいレイアウト */
   header {
     padding: 10px;
     background-color: #f7f7f7;
@@ -15,39 +16,67 @@ body {
     border: none;
     background-color: transparent;
     font-size: 1.2em;
-    text-align: center;
   }
   
-  /* 各セクションのスタイル */
-  #page-auth > div, #page-home, #page-chat {
-    max-width: 600px;
-    margin: auto;
-  }
-  
-  /* フォーム中央寄せ */
-  #page-auth > div {
-    margin-top: 50px;
+  /* フォーム用共通スタイル */
+  .form-container {
+    max-width: 400px;
+    margin: 50px auto;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .switch-btn {
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: #007BFF;
+    text-decoration: underline;
+    cursor: pointer;
   }
   
-  /* 検索・友達リクエスト・連絡可能リスト */
-  #search-section, #friend-requests-section, #contacts-section {
-    margin: 20px;
+  /* 検索・リクエスト・連絡リスト */
+  .search-section,
+  .request-section,
+  .contact-section {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 10px;
   }
-  ul, .contact-list {
+  .search-section input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  ul {
     list-style: none;
     padding: 0;
+    margin-top: 10px;
   }
-  .contact-item {
+  .contact-list li,
+  #search-result li,
+  #request-list li {
     border-bottom: 1px solid #ccc;
     padding: 10px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
   }
-  .contact-item:hover {
+  li:hover {
     background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  /* ボタンスタイル */
+  button {
+    padding: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: #fff;
+    border-radius: 3px;
     cursor: pointer;
   }
   
@@ -56,9 +85,11 @@ body {
     display: flex;
     flex-direction: column;
     height: 80vh;
+    max-width: 600px;
+    margin: 20px auto;
+    background: #fff;
     border: 1px solid #ccc;
-    margin: 20px;
-    border-radius: 8px;
+    border-radius: 5px;
   }
   .message-history {
     flex: 1;
@@ -73,32 +104,23 @@ body {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 0 0 0 8px;
   }
   .message-input button {
     padding: 10px;
-    border: 1px solid #ccc;
-    border-left: none;
-    border-radius: 0 0 8px 0;
-  }
-  button {
-    cursor: pointer;
   }
   
-  /* レスポンシブデザイン */
-  @media (max-width: 600px) {
-    body {
-      font-size: 16px;
-    }
-    #page-auth > div, #page-home, #page-chat {
+  /* 戻るボタン */
+  .back-btn {
+    margin: 10px;
+  }
+  
+  /* レスポンシブ対応 */
+  @media (max-width: 768px) {
+    .form-container, .search-section, .request-section, .contact-section, .chat-container {
       margin: 10px;
-      padding: 10px;
+      width: 95%;
     }
-    .chat-container {
-      height: 70vh;
-      margin: 10px;
-    }
-    .message-input input, .message-input button {
-      padding: 8px;
+    .message-input input {
+      font-size: 1em;
     }
   }  

@@ -2,14 +2,16 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>スマホ対応チャットアプリ</title>
+  <!-- スマートフォン対応のためのviewport設定 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>レスポンシブチャットアプリ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- 認証画面：ログイン／登録 -->
   <div id="page-auth">
     <!-- ログインフォーム -->
-    <div id="login-form">
+    <div id="login-form" class="form-container">
       <h1>ログイン</h1>
       <form id="form-login">
         <label>
@@ -24,10 +26,10 @@
         <br>
         <button type="submit">ログイン</button>
       </form>
-      <button id="to-registration">新規登録はこちら</button>
+      <button id="to-registration" class="switch-btn">新規登録はこちら</button>
     </div>
     <!-- 登録フォーム -->
-    <div id="registration-form" style="display:none;">
+    <div id="registration-form" class="form-container" style="display:none;">
       <h1>新規ユーザー登録</h1>
       <form id="form-register">
         <label>
@@ -42,29 +44,32 @@
         <br>
         <button type="submit">登録</button>
       </form>
-      <button id="to-login">ログインはこちら</button>
+      <button id="to-login" class="switch-btn">ログインはこちら</button>
     </div>
   </div>
 
-  <!-- ホーム画面：ユーザー検索＆連絡可能ユーザーリスト、友達リクエスト -->
+  <!-- ホーム画面：ユーザー検索＆友達リクエスト＆連絡可能ユーザーリスト -->
   <div id="page-home" style="display:none;">
     <header>
       <input type="text" id="display-username" value="" readonly>
     </header>
-    <section id="search-section">
+    <section class="search-section">
       <input type="text" id="user-search" placeholder="ユーザー検索">
       <ul id="search-result">
         <!-- ユーザー検索結果 -->
       </ul>
     </section>
-    <section id="friend-requests-section">
-      <h2>受信した友達リクエスト</h2>
-      <button id="simulate-request">友達リクエストを受信する（シミュレーション）</button>
-      <ul id="friend-requests-list">
+
+    <!-- 友達リクエスト一覧 -->
+    <section class="request-section">
+      <h2>友達リクエスト</h2>
+      <ul id="request-list">
         <!-- 受信した友達リクエスト -->
       </ul>
     </section>
-    <section id="contacts-section">
+
+    <!-- 承認済みの連絡可能ユーザーリスト -->
+    <section class="contact-section">
       <h2>連絡可能ユーザーリスト</h2>
       <ul class="contact-list" id="contact-list">
         <!-- 承認済み友達リスト -->
@@ -74,7 +79,7 @@
 
   <!-- チャット画面 -->
   <div id="page-chat" style="display:none;">
-    <button id="back-to-home">戻る</button>
+    <button id="back-to-home" class="back-btn">戻る</button>
     <div class="chat-container">
       <div class="message-history" id="message-history">
         <!-- チャット履歴 -->

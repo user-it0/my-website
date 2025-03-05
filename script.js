@@ -2,10 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // グローバル変数
     let currentUser = null;
     let approvedFriends = [];
-    let sentRequests = [];
-    let pendingRequests = []; // 受信した友達リクエスト
-  
-    // ユーザー検索用のダミーデータ
+    let incomingRequests = [];
+    // ユーザー検索用のダミーデータ（実際はサーバーから取得）
     const dummyUsers = ["Alice", "Bob", "Charlie", "David", "Eve"];
   
     // 要素取得
@@ -21,9 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const displayUsername = document.getElementById("display-username");
     const userSearchInput = document.getElementById("user-search");
     const searchResultUl = document.getElementById("search-result");
-    const friendRequestsList = document.getElementById("friend-requests-list");
-    const simulateRequestBtn = document.getElementById("simulate-request");
     const contactListUl = document.getElementById("contact-list");
+    const requestListUl = document.getElementById("request-list");
   
     const pageChat = document.getElementById("page-chat");
     const backToHomeBtn = document.getElementById("back-to-home");
@@ -31,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const chatInput = document.getElementById("chat-input");
     const sendMessageBtn = document.getElementById("send-message");
   
-    /* --- フォーム切替 --- */
+    // フォーム切替
     toRegistrationBtn.addEventListener("click", function() {
       loginDiv.style.display = "none";
       registrationDiv.style.display = "block";
@@ -41,38 +38,43 @@ document.addEventListener("DOMContentLoaded", function() {
       loginDiv.style.display = "block";
     });
   
-    /* --- ユーザー登録／ログイン --- */
+    // 登録フォーム送信
     registrationForm.addEventListener("submit", function(e) {
       e.preventDefault();
-      const username = document.getElementById("register-username").value.trim();
+      const username = document.getElementById("register-username").value;
       const password = document.getElementById("register-password").value;
-      // 通常はサーバーでユーザー登録する処理
+      // 本来はサーバーでユーザー登録する処理を実装
       currentUser = { username, password };
       alert("登録完了: " + username);
+      // ダミーの受信リクエスト例（ログイン後、いくつかのリクエストが届いているとする）
+      incomingRequests = ["Alice", "Bob"];
       showHomePage();
     });
   
+    // ログインフォーム送信
     loginForm.addEventListener("submit", function(e) {
       e.preventDefault();
-      const username = document.getElementById("login-username").value.trim();
+      const username = document.getElementById("login-username").value;
       const password = document.getElementById("login-password").value;
-      // 通常はサーバー側で認証処理を実施
+      // 本来はサーバー側で認証処理を実施
       currentUser = { username, password };
       alert("ログイン成功: " + username);
+      // ログイン時もダミーリクエストをセット（例）
+      incomingRequests = ["Charlie"];
       showHomePage();
     });
   
-    /* --- ホーム画面表示 --- */
+    // ホーム画面表示
     function showHomePage() {
       displayUsername.value = currentUser.username;
       pageAuth.style.display = "none";
       pageHome.style.display = "block";
       pageChat.style.display = "none";
       renderContactList();
-      renderFriendRequests();
+      renderRequestList();
     }
   
-    /* --- 連絡可能ユーザーリストのレンダリング --- */
+    // 承認済みユーザーリストのレンダリング
     function renderContactList() {
       contactListUl.innerHTML = "";
       approvedFriends.forEach(friend => {
@@ -86,48 +88,51 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     }
   
-    /* --- 友達リクエスト（受信）のレンダリング --- */
-    function renderFriendRequests() {
-      friendRequestsList.innerHTML = "";
-      pendingRequests.forEach((request, index) => {
+    // 友達リクエスト一覧のレンダリング
+    function renderRequestList() {
+      requestListUl.innerHTML = "";
+      incomingRequests.forEach(requestUser => {
         const li = document.createElement("li");
         li.className = "contact-item";
-        li.textContent = request;
-        
+        // リクエストユーザー名とアクションボタン群
+        const span = document.createElement("span");
+        span.textContent = requestUser;
+        li.appendChild(span);
         // 承認ボタン
-        const approveBtn = document.createElement("button");
-        approveBtn.textContent = "承認";
-        approveBtn.addEventListener("click", function(e) {
+        const acceptBtn = document.createElement("button");
+        acceptBtn.textContent = "承認";
+        acceptBtn.style.marginLeft = "10px";
+        acceptBtn.addEventListener("click", function(e) {
           e.stopPropagation();
-          approvedFriends.push(request);
-          pendingRequests.splice(index, 1);
-          alert(request + " を承認しました。");
-          renderFriendRequests();
+          approvedFriends.push(requestUser);
+          incomingRequests = incomingRequests.filter(user => user !== requestUser);
+          alert(requestUser + " のリクエストを承認しました。");
+          renderRequestList();
           renderContactList();
         });
-        
+        li.appendChild(acceptBtn);
         // 拒否ボタン
-        const rejectBtn = document.createElement("button");
-        rejectBtn.textContent = "拒否";
-        rejectBtn.addEventListener("click", function(e) {
+        const declineBtn = document.createElement("button");
+        declineBtn.textContent = "拒否";
+        declineBtn.style.marginLeft = "5px";
+        declineBtn.addEventListener("click", function(e) {
           e.stopPropagation();
-          pendingRequests.splice(index, 1);
-          alert(request + " のリクエストを拒否しました。");
-          renderFriendRequests();
+          incomingRequests = incomingRequests.filter(user => user !== requestUser);
+          alert(requestUser + " のリクエストを拒否しました。");
+          renderRequestList();
         });
-        
-        li.appendChild(approveBtn);
-        li.appendChild(rejectBtn);
-        friendRequestsList.appendChild(li);
+        li.appendChild(declineBtn);
+  
+        requestListUl.appendChild(li);
       });
     }
   
-    /* --- ユーザー検索 --- */
+    // ユーザー検索機能
     userSearchInput.addEventListener("input", function() {
       const query = this.value.trim().toLowerCase();
       searchResultUl.innerHTML = "";
       if(query === "") return;
-      // currentUserは検索結果から除外
+      // 現在のユーザーは除外
       const results = dummyUsers.filter(u => 
         u.toLowerCase().includes(query) && u !== currentUser.username
       );
@@ -136,41 +141,20 @@ document.addEventListener("DOMContentLoaded", function() {
         li.textContent = user;
         li.className = "contact-item";
         li.addEventListener("click", function() {
-          // 送信済み、または既に友達の場合は重複しないように
+          // 友達追加リクエスト送信（相手側にリクエストが届く仕組みをシミュレーション）
           if(approvedFriends.includes(user)) {
             alert(user + " は既に連絡可能リストに追加されています。");
-          } else if(sentRequests.includes(user)) {
-            alert(user + " へのリクエストは既に送信済みです。");
           } else {
-            sentRequests.push(user);
+            // ここでは送信後、即座に相手側にリクエストが届いたと仮定
             alert(user + " に友達追加リクエストを送信しました。");
-            // ※ここでは送信側のリクエスト処理のみを実施
+            // ※実際はサーバー経由でリクエストが届く仕組みにする
           }
         });
         searchResultUl.appendChild(li);
       });
     });
   
-    /* --- シミュレーション：受信した友達リクエスト --- */
-    simulateRequestBtn.addEventListener("click", function() {
-      // dummyUsersから、既に自分、承認済み、送信済み、受信済み以外のユーザーをランダムに選択
-      const candidates = dummyUsers.filter(u => 
-        u !== currentUser.username &&
-        !approvedFriends.includes(u) &&
-        !pendingRequests.includes(u) &&
-        !sentRequests.includes(u)
-      );
-      if(candidates.length === 0) {
-        alert("新たなリクエストはありません。");
-        return;
-      }
-      const randomUser = candidates[Math.floor(Math.random() * candidates.length)];
-      pendingRequests.push(randomUser);
-      alert(randomUser + " から友達リクエストが届きました。");
-      renderFriendRequests();
-    });
-  
-    /* --- チャット画面を開く --- */
+    // チャット画面を開く
     function openChat(friend) {
       pageHome.style.display = "none";
       pageChat.style.display = "block";
@@ -180,13 +164,13 @@ document.addEventListener("DOMContentLoaded", function() {
       messageHistory.appendChild(welcome);
     }
   
-    /* --- ホーム画面へ戻る --- */
+    // ホーム画面へ戻る
     backToHomeBtn.addEventListener("click", function() {
       pageChat.style.display = "none";
       pageHome.style.display = "block";
     });
   
-    /* --- チャット送信 --- */
+    // チャット送信処理
     sendMessageBtn.addEventListener("click", function() {
       const msg = chatInput.value.trim();
       if(msg === "") return;
