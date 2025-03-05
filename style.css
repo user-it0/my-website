@@ -1,0 +1,69 @@
+/* 全体設定 */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* ヘッダー */
+  header {
+    padding: 10px;
+    background-color: #f7f7f7;
+  }
+  input[readonly] {
+    border: none;
+    background-color: transparent;
+    font-size: 1.2em;
+  }
+  
+  /* 共通：リスト（友達・検索結果） */
+  .contact-list, #search-result {
+    list-style: none;
+    padding: 0;
+  }
+  .contact-item {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .contact-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  /* チャット画面 */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+  }
+  .message-history {
+    flex: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+  }
+  .message-input {
+    display: flex;
+  }
+  .message-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  .message-input button {
+    padding: 10px;
+  }
+  button {
+    cursor: pointer;
+  }
+  
+  /* フォーム中央寄せ */
+  #page-auth > div {
+    max-width: 400px;
+    margin: 50px auto;
+  }  
