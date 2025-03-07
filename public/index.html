@@ -2,96 +2,36 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <!-- スマートフォン対応のためのviewport設定 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>レスポンシブチャットアプリ</title>
+  <title>リアルタイムチャット</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 認証画面：ログイン／登録 -->
-  <div id="page-auth">
-    <!-- ログインフォーム -->
-    <div id="login-form" class="form-container">
-      <h1>ログイン</h1>
-      <form id="form-login">
-        <label>
-          ユーザー名:
-          <input type="text" id="login-username" required>
-        </label>
-        <br>
-        <label>
-          パスワード:
-          <input type="password" id="login-password" required>
-        </label>
-        <br>
-        <button type="submit">ログイン</button>
-      </form>
-      <button id="to-registration" class="switch-btn">新規登録はこちら</button>
-    </div>
-    <!-- 登録フォーム -->
-    <div id="registration-form" class="form-container" style="display:none;">
-      <h1>新規ユーザー登録</h1>
-      <form id="form-register">
-        <label>
-          ユーザー名:
-          <input type="text" id="register-username" required>
-        </label>
-        <br>
-        <label>
-          パスワード:
-          <input type="password" id="register-password" required>
-        </label>
-        <br>
-        <button type="submit">登録</button>
-      </form>
-      <button id="to-login" class="switch-btn">ログインはこちら</button>
-    </div>
+  <!-- 認証画面 -->
+  <div id="auth-page">
+    <h2>ログイン / 登録</h2>
+    <input type="text" id="username" placeholder="ユーザー名">
+    <button id="login-btn">ログイン</button>
   </div>
 
-  <!-- ホーム画面：ユーザー検索＆友達リクエスト＆連絡可能ユーザーリスト -->
-  <div id="page-home" style="display:none;">
-    <header>
-      <input type="text" id="display-username" value="" readonly>
-    </header>
-    <section class="search-section">
-      <input type="text" id="user-search" placeholder="ユーザー検索">
-      <ul id="search-result">
-        <!-- ユーザー検索結果 -->
-      </ul>
-    </section>
-
-    <!-- 友達リクエスト一覧 -->
-    <section class="request-section">
-      <h2>友達リクエスト</h2>
-      <ul id="request-list">
-        <!-- 受信した友達リクエスト -->
-      </ul>
-    </section>
-
-    <!-- 承認済みの連絡可能ユーザーリスト -->
-    <section class="contact-section">
-      <h2>連絡可能ユーザーリスト</h2>
-      <ul class="contact-list" id="contact-list">
-        <!-- 承認済み友達リスト -->
-      </ul>
-    </section>
+  <!-- ホーム画面 -->
+  <div id="home-page" style="display:none;">
+    <h2>ようこそ <span id="current-user"></span></h2>
+    <input type="text" id="search-user" placeholder="友達を検索">
+    <ul id="user-list"></ul>
+    <h3>友達リスト</h3>
+    <ul id="friend-list"></ul>
   </div>
 
   <!-- チャット画面 -->
-  <div id="page-chat" style="display:none;">
-    <button id="back-to-home" class="back-btn">戻る</button>
-    <div class="chat-container">
-      <div class="message-history" id="message-history">
-        <!-- チャット履歴 -->
-      </div>
-      <div class="message-input">
-        <input type="text" id="chat-input" placeholder="メッセージを入力">
-        <button id="send-message">送信</button>
-      </div>
-    </div>
+  <div id="chat-page" style="display:none;">
+    <h2><span id="chat-user"></span> さんとチャット</h2>
+    <div id="messages"></div>
+    <input type="text" id="message-input" placeholder="メッセージを入力">
+    <button id="send-btn">送信</button>
+    <button id="back-btn">戻る</button>
   </div>
 
-  <!-- Socket.IO クライアントライブラリ -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>

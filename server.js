@@ -1,29 +1,41 @@
-console.log('Server.js is being executed');
-
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const mongoose = require("mongoose");
+
 const app = express();
-const server = require("http").createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const server = http.createServer(app);
+const io = socketIo(server);
 
-// public フォルダにあるファイル（index.html など）を配信
-app.use(express.static("public"));
+mongoose.connect("mongodb://localhost/chat-app", { useNewUrlParser: true, useUnifiedTopology: true });
 
-io.on("connection", (socket) => {
-  console.log("新しいクライアント接続:", socket.id);
+const User = mongoose.model("User", new mongoose.Schema({ username: String, friends: [String] }));
+const Message = mongoose.model("Message", new mongoose.Schema({ from: String, to: String, message: String }));
 
-  socket.on("joinRoom", (room) => {
-    socket.join(room);
-    console.log(`Socket ${socket.id} joined room ${room}`);
+const users = {};
+
+io.on("connection", socket => {
+  socket.on("login", async username => {
+    users[username] = socket.id;
+    let user = await User.findOne({ username });
+    if (!user) user = await User.create({ username, friends: [] });
+    socket.emit("update-friends", user.friends);
   });
 
-  socket.on("chatMessage", (data) => {
-    // 受け取ったルームへメッセージを送信
-    io.to(data.room).emit("chatMessage", data);
+  socket.on("search-user", async query => {
+    const users = await User.find({ username: new RegExp(query, "i") }).limit(10);
+    socket.emit("search-results", users.map(u => u.username));
+  });
+
+  socket.on("send-message", async data => {
+    await Message.create(data);
+    io.to(users[data.to]).emit("receive-message", data);
+  });
+
+  socket.on("load-messages", async ({ user1, user2 }) => {
+    const messages = await Message.find({ $or: [{ from: user1, to: user2 }, { from: user2, to: user1 }] });
+    messages.forEach(m => socket.emit("receive-message", m));
   });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log("Server is running on port", PORT);
-});
+server.listen(3000, () => console.log("Server running on port 3000"));
