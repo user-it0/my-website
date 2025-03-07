@@ -3,7 +3,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const mongoose = require("mongoose");
 
-const app = express();
+const app = express(app.use(express.static(__dirname + "/public")));
 const server = http.createServer(app);
 const io = socketIo(server);
 
