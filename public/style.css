@@ -1,25 +1,26 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
+  padding: 50px;
+  background-color: #f0f0f0;
 }
-#messages {
-  border: 1px solid #ccc;
-  height: 300px;
-  overflow-y: auto;
-  margin-bottom: 10px;
-  padding: 5px;
+
+h1 {
+  color: #333;
 }
-ul {
-  list-style: none;
-  padding: 0;
-}
-ul li {
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin: 5px;
-  cursor: pointer;
-}
+
 button {
-  padding: 10px;
-  margin: 5px;
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.slider-container {
+  margin: 20px auto;
+  width: 80%;
+  max-width: 400px;
+}
+
+input[type="range"] {
+  width: 100%;
 }

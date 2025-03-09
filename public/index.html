@@ -3,36 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リアルタイムチャット</title>
+  <title>マイク増幅デモ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 認証画面 -->
-  <div id="auth-page">
-    <h2>ログイン / 登録</h2>
-    <input type="text" id="username" placeholder="ユーザー名">
-    <button id="login-btn">ログイン</button>
+  <h1>iPhone マイク増幅デモ</h1>
+  <button id="startButton">マイク開始</button>
+  <button id="stopButton" disabled>停止</button>
+  <div class="slider-container">
+    <label for="gainSlider">音量 (Gain): </label>
+    <input type="range" id="gainSlider" min="1" max="10" step="0.1" value="1">
+    <span id="gainValue">1</span>
   </div>
-
-  <!-- ホーム画面 -->
-  <div id="home-page" style="display:none;">
-    <h2>ようこそ <span id="current-user"></span></h2>
-    <input type="text" id="search-user" placeholder="友達を検索">
-    <ul id="user-list"></ul>
-    <h3>友達リスト</h3>
-    <ul id="friend-list"></ul>
-  </div>
-
-  <!-- チャット画面 -->
-  <div id="chat-page" style="display:none;">
-    <h2><span id="chat-user"></span> さんとチャット</h2>
-    <div id="messages"></div>
-    <input type="text" id="message-input" placeholder="メッセージを入力">
-    <button id="send-btn">送信</button>
-    <button id="back-btn">戻る</button>
-  </div>
-
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+  <p>※Bluetoothイヤホンがシステムの既定出力先の場合、自動的にそちらに音が出力されます。</p>
   <script src="script.js"></script>
 </body>
 </html>

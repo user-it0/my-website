@@ -1,80 +1,57 @@
-const socket = io();
-let currentUser = null;
-let currentChatUser = null;
+let audioContext;
+let micStream;
+let mediaStreamSource;
+let gainNode;
 
-// ログイン処理
-document.getElementById("login-btn").addEventListener("click", function() {
-  currentUser = document.getElementById("username").value.trim();
-  if (currentUser === "") return alert("ユーザー名を入力してください");
-  socket.emit("login", currentUser);
-  document.getElementById("auth-page").style.display = "none";
-  document.getElementById("home-page").style.display = "block";
-  document.getElementById("current-user").textContent = currentUser;
-});
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+const gainSlider = document.getElementById('gainSlider');
+const gainValue = document.getElementById('gainValue');
 
-// 友達検索
-document.getElementById("search-user").addEventListener("input", function() {
-  const query = this.value.trim();
-  socket.emit("search-user", query);
-});
-
-// 検索結果受信
-socket.on("search-results", users => {
-  const userList = document.getElementById("user-list");
-  userList.innerHTML = "";
-  users.forEach(user => {
-    if (user !== currentUser) {
-      const li = document.createElement("li");
-      li.textContent = user;
-      li.addEventListener("click", function() {
-        socket.emit("add-friend", { from: currentUser, to: user });
-      });
-      userList.appendChild(li);
-    }
-  });
-});
-
-// 友達リスト受信
-socket.on("update-friends", friends => {
-  const friendList = document.getElementById("friend-list");
-  friendList.innerHTML = "";
-  friends.forEach(friend => {
-    const li = document.createElement("li");
-    li.textContent = friend;
-    li.addEventListener("click", function() {
-      startChat(friend);
-    });
-    friendList.appendChild(li);
-  });
-});
-
-// チャット開始
-function startChat(friend) {
-  currentChatUser = friend;
-  document.getElementById("home-page").style.display = "none";
-  document.getElementById("chat-page").style.display = "block";
-  document.getElementById("chat-user").textContent = friend;
-  socket.emit("load-messages", { user1: currentUser, user2: friend });
-}
-
-// メッセージ送信
-document.getElementById("send-btn").addEventListener("click", function() {
-  const message = document.getElementById("message-input").value.trim();
-  if (message !== "") {
-    socket.emit("send-message", { from: currentUser, to: currentChatUser, message });
-    document.getElementById("message-input").value = "";
+// マイク入力開始
+startButton.addEventListener('click', async () => {
+  try {
+    // AudioContextを作成
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // マイクへのアクセス要求
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // マイクストリームからAudioNodeを作成
+    mediaStreamSource = audioContext.createMediaStreamSource(micStream);
+    
+    // ゲインノードで増幅
+    gainNode = audioContext.createGain();
+    gainNode.gain.value = parseFloat(gainSlider.value);
+    
+    // マイクの音声→ゲイン→出力（既定のオーディオ出力へ接続）
+    mediaStreamSource.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    startButton.disabled = true;
+    stopButton.disabled = false;
+    
+  } catch (error) {
+    console.error('マイクへのアクセスに失敗しました:', error);
+    alert('マイクにアクセスできませんでした。設定や許可を確認してください。');
   }
 });
 
-// 受信メッセージ表示
-socket.on("receive-message", ({ from, message }) => {
-  const msgDiv = document.createElement("div");
-  msgDiv.textContent = `${from}: ${message}`;
-  document.getElementById("messages").appendChild(msgDiv);
+// マイク入力停止
+stopButton.addEventListener('click', () => {
+  if (micStream) {
+    micStream.getTracks().forEach(track => track.stop());
+  }
+  if (audioContext) {
+    audioContext.close();
+  }
+  startButton.disabled = false;
+  stopButton.disabled = true;
 });
 
-// 戻るボタン
-document.getElementById("back-btn").addEventListener("click", function() {
-  document.getElementById("chat-page").style.display = "none";
-  document.getElementById("home-page").style.display = "block";
+// ゲインスライダーの調整
+gainSlider.addEventListener('input', () => {
+  const gainVal = parseFloat(gainSlider.value);
+  if (gainNode) {
+    gainNode.gain.value = gainVal;
+  }
+  gainValue.textContent = gainVal;
 });
